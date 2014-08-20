@@ -10,7 +10,7 @@ Microsoft .NET Framework 4.5
 http://www.microsoft.com/en-au/download/details.aspx?id=30653
 
 Microsoft XNA Framework (At least 4.0)
-http://www.microsoft.com/en-au/download/details.aspx?id=30653
+http://www.microsoft.com/en-au/download/details.aspx?id=20914
 
 ===============================
 
