@@ -1,6 +1,6 @@
 namespace D360
 {
-    partial class Form1
+    partial class HUDForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@ namespace D360
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HUDForm));
             this.SuspendLayout();
             // 
             // Form1

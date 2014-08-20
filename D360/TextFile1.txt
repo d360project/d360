@@ -1,0 +1,416 @@
+﻿private bool mouseMoving = false;
+        private bool mouse_absolute = false;
+        private bool leftTriggerDown = false;
+        private bool rightTriggerDown = false;
+
+        private uint centerX = 32768;
+        private uint centerY = 30850;
+
+        private uint xScaleAbsolute = 30000;
+        private uint yScaleAbsolute = 25000;
+
+        private uint xScaleRelative = 20;
+        private uint yScaleRelative = 20;
+
+        private uint xScaleAbsoluteRightStick = 30000;
+        private uint yScaleAbsoluteRightStick = 25000;
+
+        private uint rightStickXValue;
+        private uint rightStickYValue;
+
+
+/*
+private void updateInput()
+        {
+            GamePadState newState = GamePad.GetState(PlayerIndex.One, GamePadDeadZone.Circular);
+
+            // mouse position
+
+            if (!newState.IsConnected)
+            {
+                return;
+
+                /*
+                mouseMoving = false;
+                mouse_absolute = false;
+                VirtualMouse.LeftUp();
+                mouse_event(MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0);
+                VirtualKeyboard.KeyUp(System.Windows.Forms.Keys.D1);
+                VirtualKeyboard.KeyUp(System.Windows.Forms.Keys.D2);
+                VirtualKeyboard.KeyUp(System.Windows.Forms.Keys.D3);
+                VirtualKeyboard.KeyUp(System.Windows.Forms.Keys.D4);
+                VirtualKeyboard.KeyUp(System.Windows.Forms.Keys.LShiftKey);
+                */
+            }
+
+            uint xValue = (uint)(newState.ThumbSticks.Left.X * xScaleAbsolute);
+            uint yValue = (uint)(newState.ThumbSticks.Left.Y * -yScaleAbsolute);
+
+            if (mouse_absolute)
+            {
+
+                VirtualMouse.MoveAbsolute((int)(centerX + xValue), (int)(centerY + yValue));
+                //VirtualMouse.MoveAbsolute(centerX + xValue, centerY + yValue);
+
+                if ((newState.ThumbSticks.Left.X != 0) && (newState.ThumbSticks.Left.Y != 0))
+                {
+                    if (!mouseMoving)
+                    {
+                        mouseMoving = true;
+                        //VirtualMouse.LeftDown();//make left button down
+                        VirtualKeyboard.KeyDown(System.Windows.Forms.Keys.Space);
+                    }
+
+                }
+                else
+                {
+                    if (mouseMoving)
+                    {
+                        mouseMoving = false;
+                        VirtualMouse.LeftUp();
+                        VirtualKeyboard.KeyUp(System.Windows.Forms.Keys.Space);
+                    }
+                }
+            }
+            else
+            {
+                xValue = (uint)(newState.ThumbSticks.Left.X * xScaleRelative);
+                yValue = (uint)(newState.ThumbSticks.Left.Y * -yScaleRelative);
+
+                if ((newState.ThumbSticks.Left.X == 0) && (newState.ThumbSticks.Left.Y == 0))
+                {
+                    xValue = (uint)(newState.ThumbSticks.Right.X * xScaleRelative);
+                    yValue = (uint)(newState.ThumbSticks.Right.Y * -yScaleRelative);
+                }
+
+                VirtualMouse.MoveRelative(xValue, yValue);
+                //mouse_event(MOUSEEVENTF_MOVE, xValue, yValue, 0, 0);
+            }
+
+            rightStickXValue = (uint)(newState.ThumbSticks.Right.X * xScaleAbsoluteRightStick);
+            rightStickYValue = (uint)(newState.ThumbSticks.Right.Y * -yScaleAbsoluteRightStick);
+
+
+            if (newState.Triggers.Left > 0)
+            {
+                if (!leftTriggerDown)
+                {
+                    VirtualKeyboard.KeyUp(System.Windows.Forms.Keys.Space);
+                    VirtualMouse.LeftDown();
+                    VirtualKeyboard.KeyUp(System.Windows.Forms.Keys.LShiftKey);
+                    leftTriggerDown = true;
+                }
+            }
+            else
+            {
+                if (leftTriggerDown)
+                {
+                    leftTriggerDown = false;
+                    VirtualMouse.LeftUp();
+                    if (mouseMoving)
+                    {
+                        VirtualKeyboard.KeyDown(System.Windows.Forms.Keys.Space);
+                    }
+                }
+            }
+
+            /*
+            if (newState.Triggers.Right > 0)
+            {
+                
+                if (mouse_absolute)
+                {
+                    if ((rightStickXValue == 0) && (rightStickYValue == 0))
+                    {
+                        VirtualMouse.MoveAbsolute(centerX + xValue, centerY + yValue);
+                    }
+                    else
+                    {
+                        VirtualMouse.MoveAbsolute(centerX + rightStickXValue, centerY + rightStickYValue);
+                    }
+                }
+
+                if (!rightTriggerDown)
+                {
+                    //if (mouse_absolute)
+                    {
+                        VirtualKeyboard.KeyDown(System.Windows.Forms.Keys.LShiftKey);
+
+                    }
+                    mouse_event(MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0);//make right button down
+                    rightTriggerDown = true;
+                }
+            }
+            else
+            {
+                if (rightTriggerDown)
+                {
+                    VirtualKeyboard.KeyUp(System.Windows.Forms.Keys.LShiftKey);
+                    mouse_event(MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0);//make right button up
+                    rightTriggerDown = false;
+                }
+            }
+                 */
+
+
+            if ((newState.Buttons.RightShoulder == Microsoft.Xna.Framework.Input.ButtonState.Pressed) && (oldGamePadState.Buttons.RightShoulder == Microsoft.Xna.Framework.Input.ButtonState.Released))
+            {
+                if (mouse_absolute)
+                {
+                    if ((rightStickXValue == 0) && (rightStickYValue == 0))
+                    {
+                        VirtualMouse.MoveAbsolute(centerX + xValue, centerY + yValue);
+                    }
+                    else
+                    {
+                        VirtualMouse.MoveAbsolute(centerX + rightStickXValue, centerY + rightStickYValue);
+                    }
+                }
+
+                if (!rightTriggerDown)
+                {
+                    //if (mouse_absolute)
+                    {
+                        VirtualKeyboard.KeyDown(System.Windows.Forms.Keys.LShiftKey);
+
+                    }
+                    VirtualMouse.RightDown();
+                    rightTriggerDown = true;
+                }
+            }
+            else
+            {
+                if (rightTriggerDown)
+                {
+                    VirtualKeyboard.KeyUp(System.Windows.Forms.Keys.LShiftKey);
+                    VirtualMouse.RightUp();
+                    rightTriggerDown = false;
+                }
+            }
+
+            if ((newState.Buttons.RightShoulder == Microsoft.Xna.Framework.Input.ButtonState.Released) && (oldGamePadState.Buttons.RightShoulder == Microsoft.Xna.Framework.Input.ButtonState.Pressed))
+            {
+                VirtualKeyboard.KeyUp(System.Windows.Forms.Keys.LShiftKey);
+                VirtualMouse.RightUp();
+            }
+
+
+            if (newState.Buttons.LeftShoulder == Microsoft.Xna.Framework.Input.ButtonState.Pressed)
+            {
+                if (mouse_absolute)
+                {
+                    if ((rightStickXValue == 0) && (rightStickYValue == 0))
+                    {
+                        //VirtualMouse.MoveAbsolute(centerX + xValue, centerY + yValue);
+                        VirtualMouse.MoveAbsolute(centerX + xValue, centerY + yValue);
+                    }
+                    else
+                    {
+                        //VirtualMouse.MoveAbsolute(centerX + rightStickXValue, centerY + rightStickYValue);
+                        VirtualMouse.MoveAbsolute(centerX + rightStickXValue, centerY + rightStickYValue);
+                    }
+                }
+            }
+
+            if ((newState.Buttons.LeftShoulder == Microsoft.Xna.Framework.Input.ButtonState.Pressed) && (oldGamePadState.Buttons.LeftShoulder == Microsoft.Xna.Framework.Input.ButtonState.Released))
+            {
+                if (leftTriggerDown) return;
+
+                VirtualKeyboard.KeyDown(System.Windows.Forms.Keys.LShiftKey);
+                /*
+                if (mouse_absolute)
+                {
+                    VirtualMouse.MoveAbsolute(centerX + rightStickXValue, centerY + rightStickYValue);
+                }
+                 */
+                VirtualMouse.LeftDown();//make left button down
+            }
+
+            if ((newState.Buttons.LeftShoulder == Microsoft.Xna.Framework.Input.ButtonState.Released) && (oldGamePadState.Buttons.LeftShoulder == Microsoft.Xna.Framework.Input.ButtonState.Pressed))
+            {
+                if (leftTriggerDown) return;
+                VirtualKeyboard.KeyUp(System.Windows.Forms.Keys.LShiftKey);
+                //if (!mouseMoving)
+                {
+                    VirtualMouse.LeftUp();//make left button up
+                }
+
+            }
+
+
+
+
+            // 
+
+            if ((newState.Buttons.X == Microsoft.Xna.Framework.Input.ButtonState.Pressed) && (oldGamePadState.Buttons.X == Microsoft.Xna.Framework.Input.ButtonState.Released))
+            {
+                if (mouse_absolute)
+                {
+                    if ((rightStickXValue == 0) && (rightStickYValue == 0))
+                    {
+                        VirtualMouse.MoveAbsolute(centerX + xValue, centerY + yValue);
+                    }
+                    else
+                    {
+                        VirtualMouse.MoveAbsolute(centerX + rightStickXValue, centerY + rightStickYValue);
+                    }
+                }
+                VirtualKeyboard.KeyDown(System.Windows.Forms.Keys.D1);
+            }
+
+            if ((newState.Buttons.X == Microsoft.Xna.Framework.Input.ButtonState.Released) && (oldGamePadState.Buttons.X == Microsoft.Xna.Framework.Input.ButtonState.Pressed))
+            {
+                VirtualKeyboard.KeyUp(System.Windows.Forms.Keys.D1);
+            }
+
+            // 
+
+            if ((newState.Buttons.A == Microsoft.Xna.Framework.Input.ButtonState.Pressed) && (oldGamePadState.Buttons.A == Microsoft.Xna.Framework.Input.ButtonState.Released))
+            {
+                if (mouse_absolute)
+                {
+                    if ((rightStickXValue == 0) && (rightStickYValue == 0))
+                    {
+                        //VirtualMouse.MoveAbsolute(centerX + xValue, centerY + yValue);
+                        VirtualMouse.MoveAbsolute(centerX + xValue, centerY + yValue);
+                    }
+                    else
+                    {
+                        VirtualMouse.MoveAbsolute(centerX + rightStickXValue, centerY + rightStickYValue);
+                    }
+                }
+                VirtualKeyboard.KeyDown(System.Windows.Forms.Keys.D2);
+            }
+
+            if ((newState.Buttons.A == Microsoft.Xna.Framework.Input.ButtonState.Released) && (oldGamePadState.Buttons.A == Microsoft.Xna.Framework.Input.ButtonState.Pressed))
+            {
+                VirtualKeyboard.KeyUp(System.Windows.Forms.Keys.D2);
+            }
+
+            // 
+
+            if ((newState.Buttons.Y == Microsoft.Xna.Framework.Input.ButtonState.Pressed) && (oldGamePadState.Buttons.Y == Microsoft.Xna.Framework.Input.ButtonState.Released))
+            {
+                if (mouse_absolute)
+                {
+                    if ((rightStickXValue == 0) && (rightStickYValue == 0))
+                    {
+                        VirtualMouse.MoveAbsolute(centerX + xValue, centerY + yValue);
+                    }
+                    else
+                    {
+                        VirtualMouse.MoveAbsolute(centerX + rightStickXValue, centerY + rightStickYValue);
+                    }
+                }
+                VirtualKeyboard.KeyDown(System.Windows.Forms.Keys.D3);
+            }
+
+            if ((newState.Buttons.Y == Microsoft.Xna.Framework.Input.ButtonState.Released) && (oldGamePadState.Buttons.Y == Microsoft.Xna.Framework.Input.ButtonState.Pressed))
+            {
+                VirtualKeyboard.KeyUp(System.Windows.Forms.Keys.D3);
+            }
+
+            // 
+
+            if ((newState.Buttons.B == Microsoft.Xna.Framework.Input.ButtonState.Pressed) && (oldGamePadState.Buttons.B == Microsoft.Xna.Framework.Input.ButtonState.Released))
+            {
+                if (mouse_absolute)
+                {
+                    if ((rightStickXValue == 0) && (rightStickYValue == 0))
+                    {
+                        VirtualMouse.MoveAbsolute(centerX + xValue, centerY + yValue);
+                    }
+                    else
+                    {
+                        VirtualMouse.MoveAbsolute(centerX + rightStickXValue, centerY + rightStickYValue);
+                    }
+                }
+                VirtualKeyboard.KeyDown(System.Windows.Forms.Keys.D4);
+            }
+
+            if ((newState.Buttons.B == Microsoft.Xna.Framework.Input.ButtonState.Released) && (oldGamePadState.Buttons.B == Microsoft.Xna.Framework.Input.ButtonState.Pressed))
+            {
+                VirtualKeyboard.KeyUp(System.Windows.Forms.Keys.D4);
+            }
+
+            if ((newState.Buttons.Back == Microsoft.Xna.Framework.Input.ButtonState.Pressed) && (oldGamePadState.Buttons.Back == Microsoft.Xna.Framework.Input.ButtonState.Released))
+            {
+                VirtualKeyboard.KeyDown(System.Windows.Forms.Keys.Tab);
+            }
+
+            if ((newState.Buttons.Back == Microsoft.Xna.Framework.Input.ButtonState.Released) && (oldGamePadState.Buttons.Back == Microsoft.Xna.Framework.Input.ButtonState.Pressed))
+            {
+                VirtualKeyboard.KeyUp(System.Windows.Forms.Keys.Tab);
+            }
+
+            if ((newState.Buttons.Start == Microsoft.Xna.Framework.Input.ButtonState.Pressed) && (oldGamePadState.Buttons.Start == Microsoft.Xna.Framework.Input.ButtonState.Released))
+            {
+                mouse_absolute = true;
+                VirtualKeyboard.KeyDown(System.Windows.Forms.Keys.Escape);
+            }
+
+            if ((newState.Buttons.Start == Microsoft.Xna.Framework.Input.ButtonState.Released) && (oldGamePadState.Buttons.Start == Microsoft.Xna.Framework.Input.ButtonState.Pressed))
+            {
+                mouse_absolute = false;
+                VirtualKeyboard.KeyUp(System.Windows.Forms.Keys.Escape);
+            }
+
+            if ((newState.DPad.Down == Microsoft.Xna.Framework.Input.ButtonState.Pressed) && (oldGamePadState.DPad.Down == Microsoft.Xna.Framework.Input.ButtonState.Released))
+            {
+                mouse_absolute = true;
+                VirtualKeyboard.KeyDown(System.Windows.Forms.Keys.I);
+            }
+
+            if ((newState.DPad.Down == Microsoft.Xna.Framework.Input.ButtonState.Released) && (oldGamePadState.DPad.Down == Microsoft.Xna.Framework.Input.ButtonState.Pressed))
+            {
+                mouse_absolute = false;
+                VirtualKeyboard.KeyUp(System.Windows.Forms.Keys.I);
+            }
+
+            if ((newState.DPad.Up == Microsoft.Xna.Framework.Input.ButtonState.Pressed) && (oldGamePadState.DPad.Up == Microsoft.Xna.Framework.Input.ButtonState.Released))
+            {
+                VirtualKeyboard.KeyDown(System.Windows.Forms.Keys.Q);
+            }
+
+            if ((newState.DPad.Up == Microsoft.Xna.Framework.Input.ButtonState.Released) && (oldGamePadState.DPad.Up == Microsoft.Xna.Framework.Input.ButtonState.Pressed))
+            {
+                VirtualKeyboard.KeyUp(System.Windows.Forms.Keys.Q);
+            }
+
+            if ((newState.DPad.Left == Microsoft.Xna.Framework.Input.ButtonState.Pressed) && (oldGamePadState.DPad.Left == Microsoft.Xna.Framework.Input.ButtonState.Released))
+            {
+                mouse_absolute = true;
+                VirtualKeyboard.KeyDown(System.Windows.Forms.Keys.M);
+            }
+
+            if ((newState.DPad.Left == Microsoft.Xna.Framework.Input.ButtonState.Released) && (oldGamePadState.DPad.Left == Microsoft.Xna.Framework.Input.ButtonState.Pressed))
+            {
+                mouse_absolute = false;
+                VirtualKeyboard.KeyUp(System.Windows.Forms.Keys.M);
+            }
+
+
+            if ((newState.DPad.Right == Microsoft.Xna.Framework.Input.ButtonState.Pressed) && (oldGamePadState.DPad.Right == Microsoft.Xna.Framework.Input.ButtonState.Released))
+            {
+                VirtualKeyboard.KeyDown(System.Windows.Forms.Keys.T);
+            }
+
+            if ((newState.DPad.Right == Microsoft.Xna.Framework.Input.ButtonState.Released) && (oldGamePadState.DPad.Right == Microsoft.Xna.Framework.Input.ButtonState.Pressed))
+            {
+                VirtualKeyboard.KeyUp(System.Windows.Forms.Keys.T);
+            }
+
+
+            if ((newState.Buttons.LeftStick == Microsoft.Xna.Framework.Input.ButtonState.Pressed) && (oldGamePadState.Buttons.LeftStick == Microsoft.Xna.Framework.Input.ButtonState.Released))
+            {
+                if (mouseMoving)
+                {
+                    VirtualMouse.LeftUp();//make left button up
+                    mouseMoving = false;
+                }
+                mouse_absolute = !mouse_absolute;
+            }
+
+            oldGamePadState = newState;
+        }
+ */

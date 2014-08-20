@@ -24,7 +24,7 @@ namespace D360
             try
             {
 #endif
-                Application.Run(new Form1());
+                Application.Run(new HUDForm());
 
 #if !DEBUG
             }
