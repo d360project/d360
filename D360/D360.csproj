@@ -74,11 +74,28 @@
   <ItemGroup>
     <Compile Include="Bindings\ControllerStickBinding.cs" />
     <Compile Include="Bindings\ControllerTriggerBinding.cs" />
-    <Compile Include="Bindings\KeyboardMouseCommand.cs" />
-    <Compile Include="Bindings\ControllerEnums.cs" />
+    <Compile Include="Bindings\D3Bindings.cs" />
+    <Compile Include="Command\CursorMoveCommand.cs" />
+    <Compile Include="Command\MouseButtonCommand.cs" />
+    <Compile Include="Command\KeyboardCommand.cs" />
+    <Compile Include="Command\StateChangeCommand.cs" />
+    <Compile Include="Types\ControllerEnums.cs" />
     <Compile Include="Bindings\MouseMove.cs" />
     <Compile Include="Bindings\StateChange.cs" />
-    <Compile Include="ControllerState.cs" />
+    <Compile Include="Command\Command.cs" />
+    <Compile Include="ConfigForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ConfigForm.Designer.cs">
+      <DependentUpon>ConfigForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="System\ControllerState.cs" />
+    <Compile Include="D3BindingsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="D3BindingsForm.Designer.cs">
+      <DependentUpon>D3BindingsForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Display\HUD.cs" />
     <Compile Include="HUDForm.cs">
       <SubType>Form</SubType>
@@ -88,10 +105,17 @@
     </Compile>
     <Compile Include="Bindings\ControllerInputBinding.cs" />
     <Compile Include="InputEmulation\VirtualMouse.cs" />
-    <Compile Include="InputProcessor.cs" />
+    <Compile Include="System\InputProcessor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="InputEmulation\VirtualKeyboard.cs" />
+    <Compile Include="Types\UIntVector.cs" />
+    <EmbeddedResource Include="ConfigForm.resx">
+      <DependentUpon>ConfigForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="D3BindingsForm.resx">
+      <DependentUpon>D3BindingsForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="HUDForm.resx">
       <DependentUpon>HUDForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -132,6 +156,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Content\ControllerNotFound.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Content Include="License.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

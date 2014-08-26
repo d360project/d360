@@ -1,16 +1,17 @@
-﻿using System;
+﻿using D360.Types;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace D360.Bindings
+namespace D360
 {
     public class MouseMove
     {
         public CommandTarget commandTarget;
         public MouseMoveType moveType;
-        public Point moveScale;
+        public UIntVector moveScale;
     }
 }

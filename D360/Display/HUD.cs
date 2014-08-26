@@ -21,6 +21,7 @@ namespace D360
         Texture2D targetTexture;
         Texture2D moveModeTexture;
         Texture2D pointerModeTexture;
+        Texture2D controllerNotFoundTexture;
 
         public HUD(IntPtr windowHandle)
         {
@@ -49,6 +50,11 @@ namespace D360
                 pointerModeTexture = Texture2D.FromStream(dev, stream);
             }
 
+            using (FileStream stream = new FileStream(@"Content\ControllerNotFound.png", FileMode.Open))
+            {
+                controllerNotFoundTexture = Texture2D.FromStream(dev, stream);
+            }
+
             // Init basic effect
             effect = new BasicEffect(dev);
 
@@ -59,25 +65,43 @@ namespace D360
         {
             dev.Clear(new Microsoft.Xna.Framework.Color(0, 0, 0, 0.0f));
 
-            
-
             spriteBatch.Begin();
 
-            if (state.inputMode == Bindings.InputMode.Pointer)
+            Microsoft.Xna.Framework.Rectangle targetRect;
+
+            if (!state.connected)
             {
-                spriteBatch.Draw(pointerModeTexture, new Microsoft.Xna.Framework.Rectangle(screenWidth - 256, screenHeight - 128, 128, 64), Microsoft.Xna.Framework.Color.White);
+                targetRect = new Microsoft.Xna.Framework.Rectangle((screenWidth / 2) - (controllerNotFoundTexture.Width / 2), (screenHeight / 2) - (controllerNotFoundTexture.Height / 2), controllerNotFoundTexture.Width, controllerNotFoundTexture.Height);
+                spriteBatch.Draw(controllerNotFoundTexture, targetRect, Microsoft.Xna.Framework.Color.White);
             }
+
             else
             {
-                spriteBatch.Draw(moveModeTexture, new Microsoft.Xna.Framework.Rectangle(screenWidth - 256, screenHeight - 128, 128, 64), Microsoft.Xna.Framework.Color.White);
+
+
+                if ((state.targetingReticulePosition.X != state.centerPosition.X) && (state.targetingReticulePosition.Y != state.centerPosition.Y))
+                {
+                    int x = (int)(((state.targetingReticulePosition.X) / 65535.0f) * screenWidth) - 16;
+                    int y = (int)(((state.targetingReticulePosition.Y) / 65535.0f) * screenHeight) - 16;
+                    targetRect = new Microsoft.Xna.Framework.Rectangle(x, y, 32, 32);
+
+                    spriteBatch.Draw(targetTexture, targetRect, new Microsoft.Xna.Framework.Color(1.0f, 1.0f, 1.0f, 0.5f));
+                }
+
+                if (state.inputMode == InputMode.Pointer)
+                {
+                    spriteBatch.Draw(pointerModeTexture, new Microsoft.Xna.Framework.Rectangle(screenWidth - 128, screenHeight - 64, 128, 64), Microsoft.Xna.Framework.Color.White);
+                }
+                else
+                {
+                    spriteBatch.Draw(moveModeTexture, new Microsoft.Xna.Framework.Rectangle(screenWidth - 128, screenHeight - 64, 128, 64), Microsoft.Xna.Framework.Color.White);
+                }
+
             }
-            
             spriteBatch.End();
 
             /*
-            int x = (int)(((centerX + rightStickXValue) / 65535.0f) * screenWidth) - 16;
-            int y = (int)(((centerY + rightStickYValue) / 65535.0f) * screenHeight) - 16;
-            Microsoft.Xna.Framework.Rectangle targetRect = new Microsoft.Xna.Framework.Rectangle(x, y, 32, 32);
+            
 
             spriteBatch.Begin();
 

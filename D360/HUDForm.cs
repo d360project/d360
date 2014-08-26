@@ -14,24 +14,27 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Serialization;
 //using System.Windows.Forms;
 
 namespace D360
 {
     public partial class HUDForm : System.Windows.Forms.Form
     {
-        
 
-        
+
+
 
         private int screenWidth;
         private int screenHeight;
 
-
-
         HUD hud;
         InputProcessor inputProcessor;
-        
+
+        D3BindingsForm d3bindingsForm;
+
+        KeyboardState oldKeyboardState;
+
         /// <summary>
         /// Gets an IServiceProvider containing our IGraphicsDeviceService.
         /// This can be used with components such as the ContentManager,
@@ -48,10 +51,13 @@ namespace D360
             screenWidth = Screen.GetBounds(this).Width;
             screenHeight = Screen.GetBounds(this).Height;
 
-            Size = new System.Drawing.Size(screenWidth, screenHeight);
+            ClientSize = new System.Drawing.Size(screenWidth, screenHeight);
+
+
+            FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;  // no borders
+
             Left = 0;
             Top = 0;
-            FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;  // no borders
 
             TopMost = true;        // make the form always on top                     
             Visible = true;        // Important! if this isn't set, then the form is not shown at all
@@ -63,13 +69,52 @@ namespace D360
 
             inputProcessor = new InputProcessor(GamePad.GetState(0));
 
+            
+
             hud = new HUD(this.Handle);
             hud.screenWidth = screenWidth;
             hud.screenHeight = screenHeight;
 
+           
 
             // Extend aero glass style on form init
             OnResize(null);
+
+            d3bindingsForm = new D3BindingsForm();
+            d3bindingsForm.inputProcessor = inputProcessor;
+
+
+            
+
+            if (File.Exists(@"D3Bindings.xml"))
+            {
+                inputProcessor.d3Bindings = LoadD3Bindings();
+            }
+            else
+            {
+                SaveD3Bindings(inputProcessor.d3Bindings);
+                d3bindingsForm.Show();
+            }
+
+            oldKeyboardState = Keyboard.GetState();
+
+        }
+
+        private void SaveD3Bindings(D3Bindings bindings)
+        {
+            var bindingsFileStream = new FileStream(Application.StartupPath + @"\D3Bindings.xml", FileMode.Create);
+            var bindingsXMLSerializer = new XmlSerializer(typeof(D3Bindings));
+            bindingsXMLSerializer.Serialize(bindingsFileStream, bindings);
+            bindingsFileStream.Close();
+        }
+
+        private D3Bindings LoadD3Bindings()
+        {
+            var bindingsFileStream = new FileStream(Application.StartupPath + @"\D3Bindings.xml", FileMode.Open);
+            var bindingsXMLSerializer = new XmlSerializer(typeof(D3Bindings));
+            D3Bindings result = (D3Bindings)bindingsXMLSerializer.Deserialize(bindingsFileStream);
+            bindingsFileStream.Close();
+            return result;
         }
 
 
@@ -107,12 +152,40 @@ namespace D360
             hud.Draw(inputProcessor.currentControllerState);
 
             // Redraw immediatily
-            //updateInput();
-            inputProcessor.Update(GamePad.GetState(0));
 
             Invalidate();
+
+            LogicUpdate();
+            
         }
 
+
+        public void LogicUpdate()
+        {
+            inputProcessor.Update(GamePad.GetState(0, GamePadDeadZone.Circular));
+
+            KeyboardState newKeyboardState = Keyboard.GetState();
+
+            if ((newKeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.F12)) && (oldKeyboardState.IsKeyUp(Microsoft.Xna.Framework.Input.Keys.F12)))
+            {
+                if (d3bindingsForm.Visible)
+                {
+                    d3bindingsForm.Visible = false;
+                }
+                else
+                {
+                    d3bindingsForm.Visible = true;
+                }
+            }
+
+            oldKeyboardState = newKeyboardState;
+
+
+            if (d3bindingsForm.Visible)
+            {
+                d3bindingsForm.Refresh();
+            }
+        }
 
 
         [DllImport("user32.dll", SetLastError = true)]
@@ -129,6 +202,15 @@ namespace D360
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
 
-        
+        private void HUDForm_Load(object sender, EventArgs e)
+        {
+
+        }
+
+       
+
+
+
+
     }
 }

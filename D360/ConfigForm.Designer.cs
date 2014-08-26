@@ -1,6 +1,6 @@
-namespace D360
+﻿namespace D360
 {
-    partial class HUDForm
+    partial class ConfigForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,24 +28,21 @@ namespace D360
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HUDForm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ConfigForm));
             this.SuspendLayout();
             // 
-            // HUDForm
+            // ConfigForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(284, 262);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "HUDForm";
-            this.Text = "D360";
-            this.Load += new System.EventHandler(this.HUDForm_Load);
+            this.Name = "ConfigForm";
+            this.Text = "D360 Configuration";
             this.ResumeLayout(false);
 
         }
 
         #endregion
-
     }
 }
-

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace D360.Bindings
+namespace D360
 {
     public class ControllerTriggerBinding
     {

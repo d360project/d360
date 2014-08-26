@@ -28,7 +28,7 @@ namespace D360.InputEmulation
             {
                 downKeys.Add(key);
                 keybd_event((byte)key, 0, 0, 0);
-            }
+              }
         }
 
         public static void KeyUp(System.Windows.Forms.Keys key)
