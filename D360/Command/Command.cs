@@ -12,7 +12,7 @@ namespace D360
         public InputMode applicableMode = InputMode.None;
         public CommandTarget target = CommandTarget.Cursor;
 
-        public InputMode inputMode;
+        //public InputMode inputMode;
 
         public virtual bool Execute(ref ControllerState state)
         {

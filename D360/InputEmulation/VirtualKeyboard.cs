@@ -51,5 +51,17 @@ namespace D360.InputEmulation
 
             
         }
+
+        internal static void AllUp()
+        {
+            if (downKeys == null) return;
+            System.Windows.Forms.Keys[] downKeysArray = new System.Windows.Forms.Keys[downKeys.Count];
+            downKeys.CopyTo(downKeysArray);
+
+            foreach (System.Windows.Forms.Keys key in downKeysArray)
+            {
+                KeyUp(key);
+            }
+        }
     }
 }

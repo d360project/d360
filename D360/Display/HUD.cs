@@ -61,45 +61,50 @@ namespace D360
             spriteBatch = new SpriteBatch(dev);
         }
 
-        public void Draw(ControllerState state)
+        public void Draw(ControllerState state, bool diabloActive)
         {
             dev.Clear(new Microsoft.Xna.Framework.Color(0, 0, 0, 0.0f));
 
-            spriteBatch.Begin();
-
-            Microsoft.Xna.Framework.Rectangle targetRect;
-
-            if (!state.connected)
-            {
-                targetRect = new Microsoft.Xna.Framework.Rectangle((screenWidth / 2) - (controllerNotFoundTexture.Width / 2), (screenHeight / 2) - (controllerNotFoundTexture.Height / 2), controllerNotFoundTexture.Width, controllerNotFoundTexture.Height);
-                spriteBatch.Draw(controllerNotFoundTexture, targetRect, Microsoft.Xna.Framework.Color.White);
-            }
-
-            else
+            if (diabloActive)
             {
 
 
-                if ((state.targetingReticulePosition.X != state.centerPosition.X) && (state.targetingReticulePosition.Y != state.centerPosition.Y))
-                {
-                    int x = (int)(((state.targetingReticulePosition.X) / 65535.0f) * screenWidth) - 16;
-                    int y = (int)(((state.targetingReticulePosition.Y) / 65535.0f) * screenHeight) - 16;
-                    targetRect = new Microsoft.Xna.Framework.Rectangle(x, y, 32, 32);
 
-                    spriteBatch.Draw(targetTexture, targetRect, new Microsoft.Xna.Framework.Color(1.0f, 1.0f, 1.0f, 0.5f));
+                spriteBatch.Begin();
+
+                Microsoft.Xna.Framework.Rectangle targetRect;
+
+                if (!state.connected)
+                {
+                    targetRect = new Microsoft.Xna.Framework.Rectangle((screenWidth / 2) - (controllerNotFoundTexture.Width / 2), (screenHeight / 2) - (controllerNotFoundTexture.Height / 2), controllerNotFoundTexture.Width, controllerNotFoundTexture.Height);
+                    spriteBatch.Draw(controllerNotFoundTexture, targetRect, Microsoft.Xna.Framework.Color.White);
                 }
 
-                if (state.inputMode == InputMode.Pointer)
-                {
-                    spriteBatch.Draw(pointerModeTexture, new Microsoft.Xna.Framework.Rectangle(screenWidth - 128, screenHeight - 64, 128, 64), Microsoft.Xna.Framework.Color.White);
-                }
                 else
                 {
-                    spriteBatch.Draw(moveModeTexture, new Microsoft.Xna.Framework.Rectangle(screenWidth - 128, screenHeight - 64, 128, 64), Microsoft.Xna.Framework.Color.White);
+
+
+                    if ((state.targetingReticulePosition.X != state.centerPosition.X) && (state.targetingReticulePosition.Y != state.centerPosition.Y))
+                    {
+                        int x = (int)(((state.targetingReticulePosition.X) / 65535.0f) * screenWidth) - 16;
+                        int y = (int)(((state.targetingReticulePosition.Y) / 65535.0f) * screenHeight) - 16;
+                        targetRect = new Microsoft.Xna.Framework.Rectangle(x, y, 32, 32);
+
+                        spriteBatch.Draw(targetTexture, targetRect, new Microsoft.Xna.Framework.Color(1.0f, 1.0f, 1.0f, 0.5f));
+                    }
+
+                    if (state.inputMode == InputMode.Pointer)
+                    {
+                        spriteBatch.Draw(pointerModeTexture, new Microsoft.Xna.Framework.Rectangle(screenWidth - 128, screenHeight - 64, 128, 64), Microsoft.Xna.Framework.Color.White);
+                    }
+                    else
+                    {
+                        spriteBatch.Draw(moveModeTexture, new Microsoft.Xna.Framework.Rectangle(screenWidth - 128, screenHeight - 64, 128, 64), Microsoft.Xna.Framework.Color.White);
+                    }
+
                 }
-
+                spriteBatch.End();
             }
-            spriteBatch.End();
-
             /*
             
 

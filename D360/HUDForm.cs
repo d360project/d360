@@ -23,7 +23,8 @@ namespace D360
     {
 
 
-
+        public bool diabloActive = false;
+        private bool setNonTopmost = false;
 
         private int screenWidth;
         private int screenHeight;
@@ -32,7 +33,9 @@ namespace D360
         InputProcessor inputProcessor;
 
         D3BindingsForm d3bindingsForm;
+        ConfigForm configForm;
 
+        GamePadState oldGamePadState;
         KeyboardState oldKeyboardState;
 
         /// <summary>
@@ -69,13 +72,13 @@ namespace D360
 
             inputProcessor = new InputProcessor(GamePad.GetState(0));
 
-            
+
 
             hud = new HUD(this.Handle);
             hud.screenWidth = screenWidth;
             hud.screenHeight = screenHeight;
 
-           
+
 
             // Extend aero glass style on form init
             OnResize(null);
@@ -83,8 +86,6 @@ namespace D360
             d3bindingsForm = new D3BindingsForm();
             d3bindingsForm.inputProcessor = inputProcessor;
 
-
-            
 
             if (File.Exists(@"D3Bindings.xml"))
             {
@@ -96,6 +97,64 @@ namespace D360
                 d3bindingsForm.Show();
             }
 
+
+
+            configForm = new ConfigForm();
+            configForm.inputProcessor = inputProcessor;
+
+            if (File.Exists(@"Config.xml"))
+            {
+                inputProcessor.config = LoadConfig();
+            }
+            else
+            {
+                SaveConfig(inputProcessor.config);
+                configForm.Show();
+            }
+
+            inputProcessor.AddConfiguredBindings();
+
+            Hotkey configHotKey = new Hotkey();
+
+            configHotKey.KeyCode = System.Windows.Forms.Keys.F11;
+            configHotKey.Control = true;
+            configHotKey.Pressed += delegate
+            {
+                if (configForm.Visible)
+                {
+                    configForm.Visible = false;
+                }
+                else
+                {
+                    configForm.Visible = true;
+                }
+            };
+
+            configHotKey.Register(this);
+
+
+
+            Hotkey bindingsHotKey = new Hotkey();
+
+            bindingsHotKey.KeyCode = System.Windows.Forms.Keys.F12;
+            bindingsHotKey.Control = true;
+            bindingsHotKey.Pressed += delegate
+            {
+                if (d3bindingsForm.Visible)
+                {
+                    d3bindingsForm.Visible = false;
+                }
+                else
+                {
+                    d3bindingsForm.Visible = true;
+                }
+            };
+
+            bindingsHotKey.Register(this);
+
+            
+
+            oldGamePadState = GamePad.GetState(0, GamePadDeadZone.Circular);
             oldKeyboardState = Keyboard.GetState();
 
         }
@@ -117,6 +176,23 @@ namespace D360
             return result;
         }
 
+
+        private void SaveConfig(Configuration config)
+        {
+            var configFileStream = new FileStream(Application.StartupPath + @"\Config.xml", FileMode.Create);
+            var configXMLSerializer = new XmlSerializer(typeof(Configuration));
+            configXMLSerializer.Serialize(configFileStream, config);
+            configFileStream.Close();
+        }
+
+        private Configuration LoadConfig()
+        {
+            var ConfigFileStream = new FileStream(Application.StartupPath + @"\Config.xml", FileMode.Open);
+            var ConfigXMLSerializer = new XmlSerializer(typeof(Configuration));
+            Configuration result = (Configuration)ConfigXMLSerializer.Deserialize(ConfigFileStream);
+            ConfigFileStream.Close();
+            return result;
+        }
 
         protected override void OnResize(EventArgs e)
         {
@@ -149,42 +225,74 @@ namespace D360
         {
             // Clear device with fully transparent black
             //
-            hud.Draw(inputProcessor.currentControllerState);
+            diabloActive = false;
+            string foregroundWindowString = WindowFunctions.GetActiveWindowTitle();
+
+            if (foregroundWindowString != null)
+            {
+                if (foregroundWindowString.ToUpper() == "DIABLO III")
+                {
+                    diabloActive = true;
+
+                    if (!setNonTopmost)
+                    {
+                        WindowFunctions.DisableTopMost(WindowFunctions.GetForegroundWindowHandle());
+
+                        setNonTopmost = true;
+                    }
+                }
+            }
+
+            hud.Draw(inputProcessor.currentControllerState, diabloActive);
 
             // Redraw immediatily
 
             Invalidate();
 
-            LogicUpdate();
-            
-        }
+            //BindingsUpdate();
 
-
-        public void LogicUpdate()
-        {
-            inputProcessor.Update(GamePad.GetState(0, GamePadDeadZone.Circular));
-
-            KeyboardState newKeyboardState = Keyboard.GetState();
-
-            if ((newKeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.F12)) && (oldKeyboardState.IsKeyUp(Microsoft.Xna.Framework.Input.Keys.F12)))
-            {
-                if (d3bindingsForm.Visible)
-                {
-                    d3bindingsForm.Visible = false;
-                }
-                else
-                {
-                    d3bindingsForm.Visible = true;
-                }
-            }
-
-            oldKeyboardState = newKeyboardState;
-
+            if (diabloActive) LogicUpdate();
 
             if (d3bindingsForm.Visible)
             {
                 d3bindingsForm.Refresh();
             }
+
+            if (configForm.Visible)
+            {
+                configForm.Refresh();
+            }
+        }
+
+
+        public void BindingsUpdate()
+        {
+            GamePadState newState = GamePad.GetState(0, GamePadDeadZone.Circular);
+
+            if ((newState.IsButtonDown(Buttons.Back)) && (newState.IsButtonDown(Buttons.Start)))
+            {
+                if ((oldGamePadState.IsButtonUp(Buttons.Back)) || (oldGamePadState.IsButtonUp(Buttons.Start)))
+                {
+                    if (d3bindingsForm.Visible)
+                    {
+                        d3bindingsForm.Visible = false;
+                    }
+                    else
+                    {
+                        d3bindingsForm.Visible = true;
+                    }
+                }
+            }
+
+            oldGamePadState = newState;
+
+            
+        }
+
+        public void LogicUpdate()
+        {
+            inputProcessor.Update(GamePad.GetState(0, GamePadDeadZone.Circular));
+
         }
 
 
@@ -207,7 +315,7 @@ namespace D360
 
         }
 
-       
+
 
 
 

@@ -14,10 +14,10 @@ namespace D360
         public ControllerTriggerBinding trigger { get; set; }
         public ControllerStickBinding stick { get; set; }
 
-        
+
         public ControllerButtonState buttonState { get; set; }
         public ControllerTriggerState triggerState { get; set; }
-        
+
 
         public List<Command> commands;
 
@@ -26,7 +26,7 @@ namespace D360
             commands = new List<Command>();
         }
 
-        
+
 
         internal void ExecuteCommands(ref ControllerState state)
         {
@@ -106,17 +106,18 @@ namespace D360
         /// <param name="applicableMode">Which input mode in which this binding is active - all modes by default.</param>
         /// <param name="target">Indicates if the mouse button should be pressed with the mouse cursor at a particular location (cursorPosition, reticulePosition, or none)</param>
         /// <returns></returns>
-        internal static ControllerInputBinding[] createMouseButtonBindings(Buttons button, System.Windows.Forms.MouseButtons mouseButton, InputMode applicableMode = InputMode.All, CommandTarget target = CommandTarget.None)
+        internal static ControllerInputBinding[] createMouseButtonBindings(Buttons button, System.Windows.Forms.MouseButtons mouseButton, InputMode applicableMode = InputMode.All, CommandTarget target = CommandTarget.None, ControllerButtonState cbState = ControllerButtonState.WhileDown)
         {
             ControllerInputBinding downResult = new ControllerInputBinding();
             downResult.button = button;
-            downResult.buttonState = ControllerButtonState.OnDown;
+            downResult.buttonState = cbState;
             MouseButtonCommand newCommand = new MouseButtonCommand();
             newCommand.mouseButton = mouseButton;
             newCommand.commandState = ButtonState.Down;
             newCommand.applicableMode = applicableMode;
             newCommand.target = target;
             downResult.commands.Add(newCommand);
+
 
             ControllerInputBinding upResult = new ControllerInputBinding();
             upResult = new ControllerInputBinding();
@@ -136,6 +137,24 @@ namespace D360
         {
             ControllerInputBinding newBinding = new ControllerInputBinding();
             newBinding.stick = new ControllerStickBinding(stick, comparisonVector, comparisonState);
+
+            CursorMoveCommand newCommand = new CursorMoveCommand();
+            newCommand.mouseMove = new MouseMove();
+            newCommand.mouseMove.commandTarget = commandTarget;
+            newCommand.mouseMove.moveType = moveType;
+            newCommand.mouseMove.moveScale = moveScale;
+
+            newCommand.applicableMode = applicableMode;
+            newBinding.commands.Add(newCommand);
+            //bindings.Add(newBinding);
+
+            return newBinding;
+        }
+
+        internal static ControllerInputBinding createStickCursorMoveBinding(ControllerStick stick, Microsoft.Xna.Framework.Vector2 comparisonVector, StickState comparisonState, StickState oldState, MouseMoveType moveType, Types.UIntVector moveScale, CommandTarget commandTarget, InputMode applicableMode)
+        {
+            ControllerInputBinding newBinding = new ControllerInputBinding();
+            newBinding.stick = new ControllerStickBinding(stick, comparisonVector, comparisonState, oldState);
 
             CursorMoveCommand newCommand = new CursorMoveCommand();
             newCommand.mouseMove = new MouseMove();
@@ -172,6 +191,80 @@ namespace D360
             upResult.commands.Add(newCommand);
 
             return new ControllerInputBinding[2] { downResult, upResult };
+        }
+
+        internal static ControllerInputBinding[] createStickKeyBinding(ControllerStick stick, Microsoft.Xna.Framework.Vector2 comparisonVector, StickState comparisonState, StickState oldState, System.Windows.Forms.Keys key, InputMode applicableMode = InputMode.All, CommandTarget target = CommandTarget.None)
+        {
+            ControllerInputBinding downResult = new ControllerInputBinding();
+            downResult.stick = new ControllerStickBinding(stick, comparisonVector, comparisonState, oldState);
+            KeyboardCommand newCommand = new KeyboardCommand();
+            newCommand.key = key;
+            newCommand.commandState = ButtonState.Down;
+            newCommand.applicableMode = applicableMode;
+            newCommand.target = target;
+            downResult.commands.Add(newCommand);
+
+            ControllerInputBinding upResult = new ControllerInputBinding();
+            upResult = new ControllerInputBinding();
+            upResult.stick = new ControllerStickBinding(stick, comparisonVector, comparisonState, oldState);
+            newCommand = new KeyboardCommand();
+            newCommand.key = key;
+            newCommand.commandState = ButtonState.Up;
+            newCommand.applicableMode = applicableMode;
+            newCommand.target = target;
+            upResult.commands.Add(newCommand);
+
+            return new ControllerInputBinding[2] { downResult, upResult };
+        }
+
+        internal static IEnumerable<ControllerInputBinding> createTriggerKeyBindings(ControllerTrigger controllerTrigger, float triggerValue, System.Windows.Forms.Keys key, InputMode applicableMode, CommandTarget target)
+        {
+            ControllerInputBinding downResult = new ControllerInputBinding();
+            downResult.trigger = new ControllerTriggerBinding(controllerTrigger, triggerValue);
+            downResult.triggerState = ControllerTriggerState.OnDown;
+            KeyboardCommand newCommand = new KeyboardCommand();
+            newCommand.key = key;
+            newCommand.commandState = ButtonState.Down;
+            newCommand.applicableMode = applicableMode;
+            newCommand.target = target;
+            downResult.commands.Add(newCommand);
+
+            ControllerInputBinding upResult = new ControllerInputBinding();
+            upResult = new ControllerInputBinding();
+            upResult.trigger = new ControllerTriggerBinding(controllerTrigger, triggerValue);
+            upResult.triggerState = ControllerTriggerState.OnUp;
+            upResult.buttonState = ControllerButtonState.OnUp;
+            newCommand = new KeyboardCommand();
+            newCommand.key = key;
+            newCommand.commandState = ButtonState.Up;
+            newCommand.applicableMode = applicableMode;
+            newCommand.target = target;
+            upResult.commands.Add(newCommand);
+
+            return new ControllerInputBinding[2] { downResult, upResult };
+        }
+
+        internal static IEnumerable<ControllerInputBinding> createButtonLootBindings(Buttons buttons)
+        {
+            ControllerInputBinding addResult = new ControllerInputBinding();
+            addResult.button = buttons;
+            addResult.buttonState = ControllerButtonState.WhileDown;
+            
+            MouseButtonCommand newCommand = new MouseButtonCommand();
+            newCommand.mouseButton = System.Windows.Forms.MouseButtons.Left;
+            newCommand.commandState = ButtonState.Down;
+            newCommand.target = CommandTarget.CenterRandom;
+            newCommand.applicableMode = InputMode.Move;
+            addResult.commands.Add(newCommand);
+
+            newCommand = new MouseButtonCommand();
+            newCommand.mouseButton = System.Windows.Forms.MouseButtons.Left;
+            newCommand.commandState = ButtonState.Up;
+            newCommand.target = CommandTarget.CenterRandom;
+            newCommand.applicableMode = InputMode.Move;
+            addResult.commands.Add(newCommand);
+
+            return new ControllerInputBinding[1] { addResult };
         }
     }
 }

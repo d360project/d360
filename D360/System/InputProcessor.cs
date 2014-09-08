@@ -1,5 +1,6 @@
 ﻿using D360.InputEmulation;
 using D360.Types;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace D360
@@ -20,6 +22,7 @@ namespace D360
         public UIntVector center;
 
         public D3Bindings d3Bindings;
+        public Configuration config;
 
         public List<ControllerInputBinding> bindings;
 
@@ -28,10 +31,13 @@ namespace D360
         public Queue<Command> reticuleTargetedCommands;
         public Queue<Command> cursorTargetedCommands;
         public Queue<Command> untargetedCommands;
+        public Queue<Command> centerRandomTargetedCommands;
+
+        Random rand = new Random();
 
         public InputProcessor(GamePadState initialState)
         {
-            center = new UIntVector(32768, 30850);
+            center = new UIntVector(32768, 30650);
 
             bindings = new List<ControllerInputBinding>();
             lastState = initialState;
@@ -43,20 +49,28 @@ namespace D360
             currentControllerState.centerPosition = center;
 
             d3Bindings = new D3Bindings();
+            config = new Configuration();
 
             stateChangeCommands = new Queue<StateChangeCommand>();
             cursorMoveCommands = new Queue<CursorMoveCommand>();
             reticuleTargetedCommands = new Queue<Command>();
             cursorTargetedCommands = new Queue<Command>();
             untargetedCommands = new Queue<Command>();
+            centerRandomTargetedCommands = new Queue<Command>();
 
+            CreateDefaultBindings();
+
+        }
+
+        private void CreateDefaultBindings()
+        {
             // Primary Skill Key
             AddButtonKeyBinding(Buttons.LeftShoulder, d3Bindings.forceStandStillKey, InputMode.Move, CommandTarget.TargetReticule);
-            AddButtonMouseBinding(Buttons.LeftShoulder, System.Windows.Forms.MouseButtons.Left, InputMode.All, CommandTarget.TargetReticule);
+            AddButtonMouseBinding(Buttons.LeftShoulder, System.Windows.Forms.MouseButtons.Left, InputMode.Move, CommandTarget.TargetReticule);
 
             // Secondary Skill Key
             AddButtonKeyBinding(Buttons.RightShoulder, d3Bindings.forceStandStillKey, InputMode.Move, CommandTarget.TargetReticule);
-            AddButtonMouseBinding(Buttons.RightShoulder, System.Windows.Forms.MouseButtons.Right, InputMode.All, CommandTarget.TargetReticule);
+            AddButtonMouseBinding(Buttons.RightShoulder, System.Windows.Forms.MouseButtons.Right, InputMode.Move, CommandTarget.TargetReticule);
 
             // Action Bar Skill 1 - 4
             AddButtonKeyBinding(Buttons.X, d3Bindings.actionBarSkill1Key, InputMode.Move, CommandTarget.TargetReticule);
@@ -80,26 +94,61 @@ namespace D360
             // Game Menu Key
             AddButtonKeyBinding(Buttons.Back, d3Bindings.gameMenuKey);
 
+            // Game Menu Key
+            AddButtonKeyBinding(Buttons.Start, d3Bindings.worldMapKey);
+
+
             // Left stick click to toggle between Pointer and Move modes
             AddButtonModeChangeBinding(Buttons.LeftStick, InputMode.None, true);
 
+            // Right stick click to loot nearby (spam left-mouseclicks in an area near center)
+            AddButtonLootBinding(Buttons.RightStick);
+
             //Left Stick to Move Character in Move Mode
-            AddStickCursorMoveBinding(ControllerStick.Left, MouseMoveType.Absolute, new UIntVector(30000, 25000), CommandTarget.Cursor, InputMode.Move);
+            AddStickCursorMoveBinding(ControllerStick.Left, Microsoft.Xna.Framework.Vector2.Zero, StickState.NotEqual, MouseMoveType.Absolute, new UIntVector(30000, 25000), CommandTarget.Cursor, InputMode.Move);
             AddStickKeyBinding(ControllerStick.Left, d3Bindings.forceMoveKey, CommandTarget.Cursor, InputMode.Move);
+
+            // Left Stick to stop character in place when stick returns to zero in Move Mode
+            AddStickCursorMoveBinding(ControllerStick.Left, Microsoft.Xna.Framework.Vector2.Zero, StickState.Equal, StickState.NotEqual, MouseMoveType.Absolute, new UIntVector(30000, 25000), CommandTarget.Cursor, InputMode.Move);
+            AddStickKeyBinding(ControllerStick.Left, Microsoft.Xna.Framework.Vector2.Zero, StickState.Equal, StickState.NotEqual, d3Bindings.forceMoveKey, CommandTarget.Cursor, InputMode.Move);
 
             //Right Stick to move reticule in Move Mode
             AddStickCursorMoveBinding(ControllerStick.Right, MouseMoveType.Absolute, new UIntVector(30000, 25000), CommandTarget.TargetReticule, InputMode.Move);
 
+            
+            #region Pointer Mode
+
+
             // Left stick to move cursor in Pointer Mode
-            AddStickCursorMoveBinding(ControllerStick.Left, MouseMoveType.Relative, new UIntVector(400, 400), CommandTarget.Cursor, InputMode.Pointer);
+            AddStickCursorMoveBinding(ControllerStick.Left, MouseMoveType.Relative, new UIntVector(600, 600), CommandTarget.Cursor, InputMode.Pointer);
+
+            AddButtonMouseBinding(Buttons.LeftShoulder, System.Windows.Forms.MouseButtons.Left, InputMode.Pointer, CommandTarget.None, ControllerButtonState.OnDown);
+            AddButtonMouseBinding(Buttons.RightShoulder, System.Windows.Forms.MouseButtons.Right, InputMode.Pointer, CommandTarget.None, ControllerButtonState.OnDown);
+
+            #endregion
 
         }
 
+        public void AddConfiguredBindings()
+        {
+            AddTriggerKeyBinding(ControllerTrigger.Left, 0.1f, d3Bindings.fromString(config.leftTriggerBinding), InputMode.Move, CommandTarget.TargetReticule);
+            AddTriggerKeyBinding(ControllerTrigger.Right, 0.1f, d3Bindings.fromString(config.rightTriggerBinding), InputMode.Move, CommandTarget.TargetReticule);
+        }
+
+        private void AddButtonLootBinding(Buttons buttons)
+        {
+            bindings.AddRange(ControllerInputBinding.createButtonLootBindings(buttons));
+        }
 
 
         private void AddButtonMouseBinding(Buttons buttons, System.Windows.Forms.MouseButtons mouseButtons, InputMode bindingMode = InputMode.All, CommandTarget commandTarget = CommandTarget.None)
         {
             bindings.AddRange(ControllerInputBinding.createMouseButtonBindings(buttons, mouseButtons, bindingMode, commandTarget));
+        }
+        
+        private void AddButtonMouseBinding(Buttons buttons, System.Windows.Forms.MouseButtons mouseButtons, InputMode bindingMode = InputMode.All, CommandTarget commandTarget = CommandTarget.None, ControllerButtonState cbState = ControllerButtonState.WhileDown)
+        {
+            bindings.AddRange(ControllerInputBinding.createMouseButtonBindings(buttons, mouseButtons, bindingMode, commandTarget, cbState));
         }
 
         public void AddButtonKeyBinding(Buttons button, System.Windows.Forms.Keys key, InputMode bindingMode = InputMode.All, CommandTarget commandTarget = CommandTarget.None)
@@ -122,6 +171,11 @@ namespace D360
             bindings.Add(ControllerInputBinding.createStickCursorMoveBinding(stick, comparisonVector, comparisonState, moveType, moveScale, commandTarget, bindingMode));
         }
 
+        private void AddStickCursorMoveBinding(ControllerStick stick, Microsoft.Xna.Framework.Vector2 comparisonVector, StickState comparisonState, StickState oldComparisonState, MouseMoveType moveType, UIntVector moveScale, CommandTarget commandTarget, InputMode bindingMode = InputMode.All)
+        {
+            bindings.Add(ControllerInputBinding.createStickCursorMoveBinding(stick, comparisonVector, comparisonState, oldComparisonState, moveType, moveScale, commandTarget, bindingMode));
+        }
+
         private void AddStickKeyBinding(ControllerStick stick, Microsoft.Xna.Framework.Vector2 comparisonVector, System.Windows.Forms.Keys key, CommandTarget commandTarget, InputMode inputMode)
         {
             bindings.AddRange(ControllerInputBinding.createStickKeyBinding(stick, comparisonVector, key, inputMode, commandTarget));
@@ -130,6 +184,16 @@ namespace D360
         private void AddStickKeyBinding(ControllerStick stick, System.Windows.Forms.Keys key, CommandTarget commandTarget, InputMode inputMode)
         {
             bindings.AddRange(ControllerInputBinding.createStickKeyBinding(stick, Microsoft.Xna.Framework.Vector2.Zero, key, inputMode, commandTarget));
+        }
+
+        private void AddStickKeyBinding(ControllerStick stick, Microsoft.Xna.Framework.Vector2 comparisonVector, StickState comparisonState, StickState oldComparisonState, System.Windows.Forms.Keys key, CommandTarget commandTarget, InputMode inputMode)
+        {
+            bindings.AddRange(ControllerInputBinding.createStickKeyBinding(stick, comparisonVector, comparisonState, oldComparisonState, key, inputMode, commandTarget));
+        }
+
+        private void AddTriggerKeyBinding(ControllerTrigger controllerTrigger, float triggerValue, System.Windows.Forms.Keys keys, InputMode inputMode, CommandTarget commandTarget)
+        {
+            bindings.AddRange(ControllerInputBinding.createTriggerKeyBindings(controllerTrigger, triggerValue, keys, inputMode, commandTarget));
         }
 
         public void ClearBindingsForButton(Buttons button)
@@ -160,8 +224,17 @@ namespace D360
 
             if (currentControllerState.inputMode == InputMode.Move)
             {
+                int DeltaX = (int)currentControllerState.cursorPosition.X - (int)center.X;
+                int DeltaY = (int)currentControllerState.cursorPosition.Y - (int)center.Y;
 
-                VirtualMouse.MoveAbsolute(center.X, center.Y);
+                Vector2 deltaVector = new Vector2(DeltaX, DeltaY);
+                deltaVector.Normalize();
+
+                deltaVector *= 1000.0f;
+
+
+                currentControllerState.centerPosition = new UIntVector((uint)(center.X + deltaVector.X), (uint)(center.Y + deltaVector.Y));
+               // VirtualMouse.MoveAbsolute(center.X, center.Y);
             }
             else
             {
@@ -360,6 +433,11 @@ namespace D360
 
             while (stateChangeCommands.Count > 0)
             {
+                VirtualKeyboard.AllUp();
+
+                currentControllerState.targetingReticulePosition = currentControllerState.centerPosition;
+                currentControllerState.cursorPosition = currentControllerState.centerPosition;
+
                 stateChangeCommands.Dequeue().Execute(ref currentControllerState);
             }
 
@@ -367,6 +445,30 @@ namespace D360
             {
                 cursorMoveCommands.Dequeue().Execute(ref currentControllerState);
             }
+
+
+
+
+            if (centerRandomTargetedCommands.Count > 0)
+            {
+                int DeltaX = (int)currentControllerState.cursorPosition.X - (int)center.X;
+                int DeltaY = (int)currentControllerState.cursorPosition.Y - (int)center.Y;
+
+                Vector2 deltaVector = new Vector2(DeltaX, DeltaY);
+                deltaVector.Normalize();
+
+                deltaVector *= 1000.0f;
+
+
+                UIntVector centerOffset = new UIntVector((uint)(center.X + deltaVector.X), (uint)(center.Y + deltaVector.Y));
+                VirtualMouse.MoveAbsolute(centerOffset.X, centerOffset.Y);
+            }
+            while (centerRandomTargetedCommands.Count > 0)
+            {
+                centerRandomTargetedCommands.Dequeue().Execute(ref currentControllerState);
+            }
+
+
 
             if (reticuleTargetedCommands.Count > 0)
             {
@@ -379,11 +481,15 @@ namespace D360
                     VirtualMouse.MoveAbsolute(currentControllerState.targetingReticulePosition.X, currentControllerState.targetingReticulePosition.Y);
                 }
             }
+
+            Thread.Sleep(10);
+
             while (reticuleTargetedCommands.Count > 0)
             {
                 reticuleTargetedCommands.Dequeue().Execute(ref currentControllerState);
             }
 
+            //if ((currentControllerState.inputMode != InputMode.None) && (currentControllerState.inputMode != InputMode.Pointer))
             if (currentControllerState.inputMode != InputMode.None)
             {
                 VirtualMouse.MoveAbsolute(currentControllerState.cursorPosition.X, currentControllerState.cursorPosition.Y);
@@ -392,6 +498,13 @@ namespace D360
             {
                 cursorTargetedCommands.Dequeue().Execute(ref currentControllerState);
             }
+
+
+            //if ((currentControllerState.inputMode != InputMode.None) && (currentControllerState.inputMode != InputMode.Pointer))
+            
+
+
+
 
             while (untargetedCommands.Count > 0)
             {
@@ -422,6 +535,10 @@ namespace D360
                     else if (command.target == CommandTarget.TargetReticule)
                     {
                         this.reticuleTargetedCommands.Enqueue(command);
+                    }
+                    else if (command.target == CommandTarget.CenterRandom)
+                    {
+                        this.centerRandomTargetedCommands.Enqueue(command);
                     }
                     else
                     {

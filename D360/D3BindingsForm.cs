@@ -64,6 +64,7 @@ namespace D360
             result.mapKey = d3Bindings.mapKey;
             result.potionKey = d3Bindings.potionKey;
             result.townPortalKey = d3Bindings.townPortalKey;
+            result.worldMapKey = d3Bindings.worldMapKey;
 
             return result;
         }
@@ -183,6 +184,13 @@ namespace D360
                 gameMenuTextBox.BackColor = System.Drawing.SystemColors.Control;
             }
 
+            if (worldMapTextBox.BackColor == Color.White)
+            {
+                editedBindings.worldMapKey = e.KeyCode;
+                worldMapTextBox.Text = editedBindings.worldMapKey.ToString();
+                worldMapTextBox.BackColor = System.Drawing.SystemColors.Control;
+            }
+
             if (EditingBinding)
             {
                 EditingBinding = false;
@@ -198,9 +206,13 @@ namespace D360
 
         private void saveAndCloseButton_Click(object sender, EventArgs e)
         {
-            inputProcessor.d3Bindings = editedBindings;
-            editedBindings = null;
+            if (editedBindings != null)
+            {
 
+                inputProcessor.d3Bindings = editedBindings;
+                editedBindings = null;
+
+            }
             SaveD3Bindings(inputProcessor.d3Bindings);
 
             Hide();
@@ -229,6 +241,7 @@ namespace D360
                 potionTextBox.Text = inputProcessor.d3Bindings.potionKey.ToString();
                 townPortalTextBox.Text = inputProcessor.d3Bindings.townPortalKey.ToString();
                 gameMenuTextBox.Text = inputProcessor.d3Bindings.gameMenuKey.ToString();
+                worldMapTextBox.Text = inputProcessor.d3Bindings.worldMapKey.ToString();
             }
         }
 
@@ -237,6 +250,17 @@ namespace D360
             
             CancelEditing();
             Hide();
+        }
+
+        private void skillsTextBox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void D3BindingsForm_Shown(object sender, EventArgs e)
+        {
+            editedBindings = CopyBindings(inputProcessor.d3Bindings);
+            Refresh();
         }
 
 

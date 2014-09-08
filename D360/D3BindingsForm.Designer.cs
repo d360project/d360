@@ -53,6 +53,8 @@
             this.gameMenuLabel = new System.Windows.Forms.Label();
             this.saveAndCloseButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
+            this.worldMapTextBox = new System.Windows.Forms.TextBox();
+            this.worldMapLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // actionBarSkill1Label
@@ -238,7 +240,7 @@
             // 
             // gameMenuTextBox
             // 
-            this.gameMenuTextBox.Location = new System.Drawing.Point(105, 266);
+            this.gameMenuTextBox.Location = new System.Drawing.Point(105, 292);
             this.gameMenuTextBox.Name = "gameMenuTextBox";
             this.gameMenuTextBox.ReadOnly = true;
             this.gameMenuTextBox.Size = new System.Drawing.Size(114, 20);
@@ -248,7 +250,7 @@
             // gameMenuLabel
             // 
             this.gameMenuLabel.AutoSize = true;
-            this.gameMenuLabel.Location = new System.Drawing.Point(12, 269);
+            this.gameMenuLabel.Location = new System.Drawing.Point(12, 295);
             this.gameMenuLabel.Name = "gameMenuLabel";
             this.gameMenuLabel.Size = new System.Drawing.Size(65, 13);
             this.gameMenuLabel.TabIndex = 20;
@@ -256,7 +258,7 @@
             // 
             // saveAndCloseButton
             // 
-            this.saveAndCloseButton.Location = new System.Drawing.Point(126, 292);
+            this.saveAndCloseButton.Location = new System.Drawing.Point(127, 318);
             this.saveAndCloseButton.Name = "saveAndCloseButton";
             this.saveAndCloseButton.Size = new System.Drawing.Size(93, 23);
             this.saveAndCloseButton.TabIndex = 22;
@@ -266,7 +268,7 @@
             // 
             // cancelButton
             // 
-            this.cancelButton.Location = new System.Drawing.Point(15, 292);
+            this.cancelButton.Location = new System.Drawing.Point(16, 318);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(93, 23);
             this.cancelButton.TabIndex = 23;
@@ -274,11 +276,32 @@
             this.cancelButton.UseVisualStyleBackColor = true;
             this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
             // 
+            // worldMapTextBox
+            // 
+            this.worldMapTextBox.Location = new System.Drawing.Point(105, 266);
+            this.worldMapTextBox.Name = "worldMapTextBox";
+            this.worldMapTextBox.ReadOnly = true;
+            this.worldMapTextBox.Size = new System.Drawing.Size(114, 20);
+            this.worldMapTextBox.TabIndex = 25;
+            this.worldMapTextBox.TextChanged += new System.EventHandler(this.skillsTextBox_TextChanged);
+            this.worldMapTextBox.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.bindingTextBox_MouseDoubleClick);
+            // 
+            // worldMapLabel
+            // 
+            this.worldMapLabel.AutoSize = true;
+            this.worldMapLabel.Location = new System.Drawing.Point(12, 269);
+            this.worldMapLabel.Name = "worldMapLabel";
+            this.worldMapLabel.Size = new System.Drawing.Size(59, 13);
+            this.worldMapLabel.TabIndex = 24;
+            this.worldMapLabel.Text = "World Map";
+            // 
             // D3BindingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(232, 328);
+            this.ClientSize = new System.Drawing.Size(232, 350);
+            this.Controls.Add(this.worldMapTextBox);
+            this.Controls.Add(this.worldMapLabel);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.saveAndCloseButton);
             this.Controls.Add(this.gameMenuTextBox);
@@ -311,6 +334,7 @@
             this.Text = "Diablo 3 Key Bindings";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.D3BindingsForm_FormClosing);
             this.Load += new System.EventHandler(this.D3BindingsForm_Load);
+            this.Shown += new System.EventHandler(this.D3BindingsForm_Shown);
             this.VisibleChanged += new System.EventHandler(this.D3BindingsForm_VisibleChanged);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.D3BindingsForm_KeyDown);
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.D3BindingsForm_KeyPress);
@@ -345,5 +369,7 @@
         private System.Windows.Forms.Label gameMenuLabel;
         private System.Windows.Forms.Button saveAndCloseButton;
         private System.Windows.Forms.Button cancelButton;
+        private System.Windows.Forms.TextBox worldMapTextBox;
+        private System.Windows.Forms.Label worldMapLabel;
     }
 }

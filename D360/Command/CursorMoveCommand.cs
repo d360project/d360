@@ -37,6 +37,7 @@ namespace D360
                     {
                         if (mouseMove.moveType == MouseMoveType.Absolute)
                         {
+                            
                             state.targetingReticulePosition.X = state.centerPosition.X + (uint)(inputCommandValue.X * mouseMove.moveScale.X);
                             state.targetingReticulePosition.Y = state.centerPosition.Y - (uint)(inputCommandValue.Y * mouseMove.moveScale.Y);
                         }

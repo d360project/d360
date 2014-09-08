@@ -79,6 +79,9 @@
     <Compile Include="Command\MouseButtonCommand.cs" />
     <Compile Include="Command\KeyboardCommand.cs" />
     <Compile Include="Command\StateChangeCommand.cs" />
+    <Compile Include="System\Configuration.cs" />
+    <Compile Include="System\Hotkey.cs" />
+    <Compile Include="System\WindowFunctions.cs" />
     <Compile Include="Types\ControllerEnums.cs" />
     <Compile Include="Bindings\MouseMove.cs" />
     <Compile Include="Bindings\StateChange.cs" />

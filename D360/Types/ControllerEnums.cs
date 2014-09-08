@@ -12,7 +12,7 @@ namespace D360
     public enum ButtonState {  Down, Up }
     public enum InputMode { All, None, Move, Pointer }
     public enum ControllerTriggerState { OnDown, WhileDown, OnUp, WhileUp }
-    public enum CommandTarget { Cursor, TargetReticule, None }
+    public enum CommandTarget { Cursor, TargetReticule, CenterRandom, None }
     public enum MouseMoveType { CurrentState, Absolute, Relative }
     public enum StickState { Equal, NotEqual, Any}
 }
