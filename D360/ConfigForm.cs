@@ -39,6 +39,8 @@ namespace D360
 
             SaveConfig(inputProcessor.config);
 
+            inputProcessor.loadChanges();
+
             Hide();
         }
 

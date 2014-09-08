@@ -96,6 +96,7 @@ namespace D360
 
             // Game Menu Key
             AddButtonKeyBinding(Buttons.Start, d3Bindings.worldMapKey);
+            AddButtonModeChangeBinding(Buttons.DPadDown, InputMode.Pointer);
 
 
             // Left stick click to toggle between Pointer and Move modes
@@ -127,6 +128,13 @@ namespace D360
 
             #endregion
 
+        }
+
+        public void loadChanges()
+        {
+            bindings.Clear();
+            CreateDefaultBindings();
+            AddConfiguredBindings();
         }
 
         public void AddConfiguredBindings()

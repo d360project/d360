@@ -116,7 +116,7 @@ namespace D360
 
             Hotkey configHotKey = new Hotkey();
 
-            configHotKey.KeyCode = System.Windows.Forms.Keys.F11;
+            configHotKey.KeyCode = System.Windows.Forms.Keys.F10;
             configHotKey.Control = true;
             configHotKey.Pressed += delegate
             {
@@ -136,7 +136,7 @@ namespace D360
 
             Hotkey bindingsHotKey = new Hotkey();
 
-            bindingsHotKey.KeyCode = System.Windows.Forms.Keys.F12;
+            bindingsHotKey.KeyCode = System.Windows.Forms.Keys.F11;
             bindingsHotKey.Control = true;
             bindingsHotKey.Pressed += delegate
             {
@@ -152,7 +152,18 @@ namespace D360
 
             bindingsHotKey.Register(this);
 
-            
+
+
+            Hotkey quitHotKey = new Hotkey();
+
+            quitHotKey.KeyCode = System.Windows.Forms.Keys.F12;
+            quitHotKey.Control = true;
+            quitHotKey.Pressed += delegate
+            {
+                this.Close();
+            };
+
+            quitHotKey.Register(this);
 
             oldGamePadState = GamePad.GetState(0, GamePadDeadZone.Circular);
             oldKeyboardState = Keyboard.GetState();
