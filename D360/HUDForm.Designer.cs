@@ -29,7 +29,12 @@ namespace D360
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HUDForm));
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.SuspendLayout();
+            // 
+            // backgroundWorker1
+            // 
+            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
             // 
             // HUDForm
             // 
@@ -39,12 +44,15 @@ namespace D360
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "HUDForm";
             this.Text = "D360";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.HUDForm_FormClosing);
             this.Load += new System.EventHandler(this.HUDForm_Load);
             this.ResumeLayout(false);
 
         }
 
         #endregion
+
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
 
     }
 }

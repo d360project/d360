@@ -38,6 +38,7 @@ namespace D360
                     outfile.WriteLine(ex.Message);
                     outfile.WriteLine(ex.StackTrace);
                     outfile.WriteLine();
+                    outfile.Flush();
                 }
             }
 #endif

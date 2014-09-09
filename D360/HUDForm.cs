@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Serialization;
@@ -26,6 +27,8 @@ namespace D360
         public bool diabloActive = false;
         private bool setNonTopmost = false;
 
+        public bool hudDisabled = false;
+
         private int screenWidth;
         private int screenHeight;
 
@@ -37,6 +40,13 @@ namespace D360
 
         GamePadState oldGamePadState;
         KeyboardState oldKeyboardState;
+
+        /*
+        Thread hudlessUpdateThread;
+        private bool terminateThread = false;
+
+        private bool currentlyUpdating = false;
+         */
 
         /// <summary>
         /// Gets an IServiceProvider containing our IGraphicsDeviceService.
@@ -67,7 +77,15 @@ namespace D360
 
             // Set the form click-through
             int initialStyle = GetWindowLong(this.Handle, -20);
-            SetWindowLong(this.Handle, -20, initialStyle | 0x80000 | 0x20);
+
+            if (WindowFunctions.isCompositionEnabled())
+            {
+                SetWindowLong(this.Handle, -20, initialStyle | 0x80000 | 0x20);
+            }
+            else
+            {
+                hudDisabled = true;
+            }
 
 
             inputProcessor = new InputProcessor(GamePad.GetState(0));
@@ -168,7 +186,100 @@ namespace D360
             oldGamePadState = GamePad.GetState(0, GamePadDeadZone.Circular);
             oldKeyboardState = Keyboard.GetState();
 
+            if (hudDisabled)
+            {
+                this.Visible = false;
+                this.ClientSize = new System.Drawing.Size(0, 0);
+
+                //hudlessUpdateThread = new Thread(new ThreadStart(DoUpdate));
+                //hudlessUpdateThread.Start();
+                //while (!hudlessUpdateThread.IsAlive) ;
+
+                backgroundWorker1.RunWorkerAsync();
+            }
+
         }
+
+        /*
+        public void DoUpdate()
+        {
+            while (!terminateThread)
+            {
+                if (!currentlyUpdating)
+                {
+                    currentlyUpdating = true;
+                    diabloActive = false;
+                    string foregroundWindowString = WindowFunctions.GetActiveWindowTitle();
+
+                    try
+                    {
+                        if (foregroundWindowString != null)
+                        {
+                            if (foregroundWindowString.ToUpper() == "DIABLO III")
+                            {
+                                diabloActive = true;
+
+                                if (!setNonTopmost)
+                                {
+                                    WindowFunctions.DisableTopMost(WindowFunctions.GetForegroundWindowHandle());
+
+                                    setNonTopmost = true;
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        string crashPath = Path.GetDirectoryName(Application.ExecutablePath) + @"\crash.txt";
+                        using (StreamWriter outfile = new StreamWriter(crashPath, true))
+                        {
+                            outfile.WriteLine();
+                            outfile.WriteLine(DateTime.Now.ToString());
+                            outfile.WriteLine(ex.Message);
+                            outfile.WriteLine(ex.StackTrace);
+                            outfile.WriteLine();
+                            outfile.Flush();
+                        }
+                        MessageBox.Show("Exception in windowing functions. Written to crash.txt.");
+                        this.Close();
+                    }
+
+                    try
+                    {
+                        if (diabloActive) LogicUpdate();
+                    }
+                    catch (Exception ex)
+                    {
+                        string crashPath = Path.GetDirectoryName(Application.ExecutablePath) + @"\crash.txt";
+                        using (StreamWriter outfile = new StreamWriter(crashPath, true))
+                        {
+                            outfile.WriteLine();
+                            outfile.WriteLine(DateTime.Now.ToString());
+                            outfile.WriteLine(ex.Message);
+                            outfile.WriteLine(ex.StackTrace);
+                            outfile.WriteLine();
+                            outfile.Flush();
+                        }
+                        MessageBox.Show("Exception in Logic update. Written to crash.txt.");
+                        this.Close();
+                    }
+
+                    if (d3bindingsForm.Visible)
+                    {
+                        d3bindingsForm.Refresh();
+                    }
+
+                    if (configForm.Visible)
+                    {
+                        configForm.Refresh();
+                    }
+
+                    currentlyUpdating = false;
+                }
+                Thread.Sleep(10);
+            }
+        }
+         */
 
         private void SaveD3Bindings(D3Bindings bindings)
         {
@@ -239,30 +350,82 @@ namespace D360
             diabloActive = false;
             string foregroundWindowString = WindowFunctions.GetActiveWindowTitle();
 
-            if (foregroundWindowString != null)
+            try
             {
-                if (foregroundWindowString.ToUpper() == "DIABLO III")
+                if (foregroundWindowString != null)
                 {
-                    diabloActive = true;
-
-                    if (!setNonTopmost)
+                    if (foregroundWindowString.ToUpper() == "DIABLO III")
                     {
-                        WindowFunctions.DisableTopMost(WindowFunctions.GetForegroundWindowHandle());
+                        diabloActive = true;
 
-                        setNonTopmost = true;
+                        if (!setNonTopmost)
+                        {
+                            WindowFunctions.DisableTopMost(WindowFunctions.GetForegroundWindowHandle());
+
+                            setNonTopmost = true;
+                        }
                     }
                 }
             }
+            catch (Exception ex)
+            {
+                string crashPath = Path.GetDirectoryName(Application.ExecutablePath) + @"\crash.txt";
+                using (StreamWriter outfile = new StreamWriter(crashPath, true))
+                {
+                    outfile.WriteLine();
+                    outfile.WriteLine(DateTime.Now.ToString());
+                    outfile.WriteLine(ex.Message);
+                    outfile.WriteLine(ex.StackTrace);
+                    outfile.WriteLine();
+                    outfile.Flush();
+                }
+                MessageBox.Show("Exception in windowing functions. Written to crash.txt.");
+                this.Close();
+            }
 
-            hud.Draw(inputProcessor.currentControllerState, diabloActive);
+            try
+            {
+                hud.Draw(inputProcessor.currentControllerState, diabloActive);
+            }
+            catch (Exception ex)
+            {
+                string crashPath = Path.GetDirectoryName(Application.ExecutablePath) + @"\crash.txt";
+                using (StreamWriter outfile = new StreamWriter(crashPath, true))
+                {
+                    outfile.WriteLine();
+                    outfile.WriteLine(DateTime.Now.ToString());
+                    outfile.WriteLine(ex.Message);
+                    outfile.WriteLine(ex.StackTrace);
+                    outfile.WriteLine();
+                    outfile.Flush();
+                }
+                MessageBox.Show("Exception in HUD draw. Written to crash.txt.");
+                this.Close();
+            }
 
             // Redraw immediatily
 
             Invalidate();
 
-            //BindingsUpdate();
-
-            if (diabloActive) LogicUpdate();
+            try
+            {
+                if (diabloActive) LogicUpdate();
+            }
+            catch (Exception ex)
+            {
+                string crashPath = Path.GetDirectoryName(Application.ExecutablePath) + @"\crash.txt";
+                using (StreamWriter outfile = new StreamWriter(crashPath, true))
+                {
+                    outfile.WriteLine();
+                    outfile.WriteLine(DateTime.Now.ToString());
+                    outfile.WriteLine(ex.Message);
+                    outfile.WriteLine(ex.StackTrace);
+                    outfile.WriteLine();
+                    outfile.Flush();
+                }
+                MessageBox.Show("Exception in Logic update. Written to crash.txt.");
+                this.Close();
+            }
 
             if (d3bindingsForm.Visible)
             {
@@ -297,7 +460,7 @@ namespace D360
 
             oldGamePadState = newState;
 
-            
+
         }
 
         public void LogicUpdate()
@@ -324,6 +487,16 @@ namespace D360
         private void HUDForm_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void HUDForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            //terminateThread = true;
+        }
+
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+            //DoUpdate();
         }
 
 
