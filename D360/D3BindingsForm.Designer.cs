@@ -30,30 +30,30 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(D3BindingsForm));
             this.actionBarSkill1Label = new System.Windows.Forms.Label();
-            this.actionBarSkill1TextBox = new System.Windows.Forms.TextBox();
-            this.actionBarSkill2TextBox = new System.Windows.Forms.TextBox();
+            this.actionBarSkill1TextBox = new TabSensitiveTextBox();
+            this.actionBarSkill2TextBox = new TabSensitiveTextBox();
             this.actionBarSkill2Label = new System.Windows.Forms.Label();
-            this.actionBarSkill3TextBox = new System.Windows.Forms.TextBox();
+            this.actionBarSkill3TextBox = new TabSensitiveTextBox();
             this.actionBarSkill3Label = new System.Windows.Forms.Label();
-            this.actionBarSkill4TextBox = new System.Windows.Forms.TextBox();
+            this.actionBarSkill4TextBox = new TabSensitiveTextBox();
             this.actionBarSkill4Label = new System.Windows.Forms.Label();
-            this.inventoryTextBox = new System.Windows.Forms.TextBox();
+            this.inventoryTextBox = new TabSensitiveTextBox();
             this.inventoryLabel = new System.Windows.Forms.Label();
-            this.mapTextBox = new System.Windows.Forms.TextBox();
+            this.mapTextBox = new TabSensitiveTextBox();
             this.mapLabel = new System.Windows.Forms.Label();
-            this.forceStandStillTextBox = new System.Windows.Forms.TextBox();
+            this.forceStandStillTextBox = new TabSensitiveTextBox();
             this.forceStandStillLabel = new System.Windows.Forms.Label();
-            this.forceMoveTextBox = new System.Windows.Forms.TextBox();
+            this.forceMoveTextBox = new TabSensitiveTextBox();
             this.forceMoveLabel = new System.Windows.Forms.Label();
-            this.potionTextBox = new System.Windows.Forms.TextBox();
+            this.potionTextBox = new TabSensitiveTextBox();
             this.potionLabel = new System.Windows.Forms.Label();
-            this.townPortalTextBox = new System.Windows.Forms.TextBox();
+            this.townPortalTextBox = new TabSensitiveTextBox();
             this.townPortalLabel = new System.Windows.Forms.Label();
-            this.gameMenuTextBox = new System.Windows.Forms.TextBox();
+            this.gameMenuTextBox = new TabSensitiveTextBox();
             this.gameMenuLabel = new System.Windows.Forms.Label();
             this.saveAndCloseButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
-            this.worldMapTextBox = new System.Windows.Forms.TextBox();
+            this.worldMapTextBox = new TabSensitiveTextBox();
             this.worldMapLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
@@ -346,30 +346,30 @@
         #endregion
 
         private System.Windows.Forms.Label actionBarSkill1Label;
-        private System.Windows.Forms.TextBox actionBarSkill1TextBox;
-        private System.Windows.Forms.TextBox actionBarSkill2TextBox;
+        private TabSensitiveTextBox actionBarSkill1TextBox;
+        private TabSensitiveTextBox actionBarSkill2TextBox;
         private System.Windows.Forms.Label actionBarSkill2Label;
-        private System.Windows.Forms.TextBox actionBarSkill3TextBox;
+        private TabSensitiveTextBox actionBarSkill3TextBox;
         private System.Windows.Forms.Label actionBarSkill3Label;
-        private System.Windows.Forms.TextBox actionBarSkill4TextBox;
+        private TabSensitiveTextBox actionBarSkill4TextBox;
         private System.Windows.Forms.Label actionBarSkill4Label;
-        private System.Windows.Forms.TextBox inventoryTextBox;
+        private TabSensitiveTextBox inventoryTextBox;
         private System.Windows.Forms.Label inventoryLabel;
-        private System.Windows.Forms.TextBox mapTextBox;
+        private TabSensitiveTextBox mapTextBox;
         private System.Windows.Forms.Label mapLabel;
-        private System.Windows.Forms.TextBox forceStandStillTextBox;
+        private TabSensitiveTextBox forceStandStillTextBox;
         private System.Windows.Forms.Label forceStandStillLabel;
-        private System.Windows.Forms.TextBox forceMoveTextBox;
+        private TabSensitiveTextBox forceMoveTextBox;
         private System.Windows.Forms.Label forceMoveLabel;
-        private System.Windows.Forms.TextBox potionTextBox;
+        private TabSensitiveTextBox potionTextBox;
         private System.Windows.Forms.Label potionLabel;
-        private System.Windows.Forms.TextBox townPortalTextBox;
+        private TabSensitiveTextBox townPortalTextBox;
         private System.Windows.Forms.Label townPortalLabel;
-        private System.Windows.Forms.TextBox gameMenuTextBox;
+        private TabSensitiveTextBox gameMenuTextBox;
         private System.Windows.Forms.Label gameMenuLabel;
         private System.Windows.Forms.Button saveAndCloseButton;
         private System.Windows.Forms.Button cancelButton;
-        private System.Windows.Forms.TextBox worldMapTextBox;
+        private TabSensitiveTextBox worldMapTextBox;
         private System.Windows.Forms.Label worldMapLabel;
     }
 }

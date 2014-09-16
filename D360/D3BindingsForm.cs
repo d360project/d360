@@ -215,6 +215,8 @@ namespace D360
             }
             SaveD3Bindings(inputProcessor.d3Bindings);
 
+            inputProcessor.loadChanges();
+
             Hide();
         }
 

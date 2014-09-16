@@ -17,6 +17,12 @@ Quit the software by ALT+Tab'ing to D360, then hitting ALT+F4.
 ***NEW IN VERSION 0.2***
 This version contains a small amount of configuration / binding UI. the defaults are as stated below, but upon first startup, you will be presented with the configuration dialogs. The 'Bindings' UI allows the user to specify which keys are bound to what functions within Diablo 3. The 'Configuration' UI is a start at allowing for custom behaviour - in this case, it allows the user to specify which game functions should be assigned to the left and right triggers on the controller. This should assist in the case that the user has positional/targeted abilities on the 1-4 keys, thus making it difficult to use the right stick for targeting while using the face buttons for abilities. 
 
+***NEW IN VERSION 0.2.1***
+Works without desktop composition in Windows 7. No HUD in that mode, though.
+
+***NEW IN VERSION 0.2.2***
+Updated D3 key bindings and trigger bindings are actually applied when you hit 'Save and Close'. My bad.
+
 The default expected Diablo 3 bindings are as follows:
 
 Inventory :					I

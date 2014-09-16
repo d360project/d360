@@ -81,6 +81,9 @@
     <Compile Include="Command\StateChangeCommand.cs" />
     <Compile Include="System\Configuration.cs" />
     <Compile Include="System\Hotkey.cs" />
+    <Compile Include="System\TabSensitiveTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="System\WindowFunctions.cs" />
     <Compile Include="Types\ControllerEnums.cs" />
     <Compile Include="Bindings\MouseMove.cs" />
